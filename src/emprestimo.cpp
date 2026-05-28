@@ -22,5 +22,5 @@ float Emprestimo::calculate_fine() const {
 
 void Emprestimo::display_loan_info() const {
     cout << "Livro: " << livro_->title() << " | Usuario: " << usuario_->name() 
-         << " | Dias: " << days_loaned_ << " | Multa: " << calculate_fine() << " reais \n";
+         << " | Dias emprestado: " << days_loaned_ <<  " Dias limite: 15 | Multa: " << calculate_fine() << " reais \n";
 }

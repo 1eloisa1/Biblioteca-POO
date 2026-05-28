@@ -1,7 +1,7 @@
 #include "livro.hpp"
 #include <iostream>
 
-using namespace std; // Adicionado aqui
+using namespace std; 
 
 Livro::Livro(string t_title, string t_author, string t_isbn, int t_copies)
     : title_(t_title), author_(t_author), isbn_(t_isbn), available_copies_(t_copies) {

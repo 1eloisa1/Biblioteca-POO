@@ -18,12 +18,12 @@ int main() {
         Livro* livro_alvo = minha_biblioteca.get_book(0);
 
         if (livro_alvo && livro_alvo->loan_copy()) {
-            cout << "\n[Sucesso] Copia do livro '" << livro_alvo->title() << "' reservada para emprestimo.\n";
+            cout << "\nCopia do livro '" << livro_alvo->title() << "' reservada para emprestimo.\n";
             
-            Emprestimo novo_emprestimo(&usuario_estudante, livro_alvo, 10);
+            Emprestimo novo_emprestimo(&usuario_estudante, livro_alvo, 20);
             novo_emprestimo.display_loan_info();
             
-            cout << "\n--- Finalizando o Emprestimo (Destruicao do objeto agregador) ---\n";
+            cout << "\n--- Finalizando o Emprestimo ---\n";
         }
         
         cout << "\n--- Saindo do Bloco (A Biblioteca e tudo que ela compoe serao destruidos) ---\n";
