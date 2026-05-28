@@ -29,7 +29,7 @@ int main() {
     }
     
     std::cout << "Verificação de independência da agregação:\n";
-    std::cout << "O usuário '" << usuario_estudante.name() << "' continua ativo no sistema.\n\n";
+    std::cout << "O usuario '" << usuario_estudante.name() << "' continua ativo no sistema.\n\n";
 
     return 0;
 }
