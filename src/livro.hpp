@@ -20,7 +20,6 @@ public:
     std::string isbn() const;
     int available_copies() const;
 
-    // Lógica real: gerenciar estoque de cópias
     bool loan_copy();
     void return_copy();
 };

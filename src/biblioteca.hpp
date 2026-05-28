@@ -3,12 +3,13 @@
 
 #include "livro.hpp"
 #include <vector>
+#include <memory> 
 
 class Biblioteca {
 private:
     std::string library_name_;
 
-    std::vector<Livro*> catalog_;
+    std::vector<std::unique_ptr<Livro>> catalog_;
 
 public:
     explicit Biblioteca(std::string t_name);
