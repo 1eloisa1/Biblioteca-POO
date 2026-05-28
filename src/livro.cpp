@@ -1,39 +1,28 @@
-#ifndef "livro.hpp"
-
+#include "livro.hpp"
 #include <iostream>
 
+Livro::Livro(std::string t_title, std::string t_author, std::string t_isbn, int t_copies)
+    : title_(t_title), author_(t_author), isbn_(t_isbn), available_copies_(t_copies) {
+    std::cout << "[Livro]: '" << title_ << "' registrado.\n";
+}
 
+Livro::~Livro() {
+    std::cout << "[Livro]: '" << title_ << "' removido.\n";
+}
 
-        Livro::Livro(std::string t, std::string a, std::string isbn, int copiasd)
-            : titulo_(t), autor_(a), isbn_(isbn), copiasdisponiveis_(copiasd){
-                std::cout << "[Livro] construtor: '" titulo_ << "' registrado. \n";
-            }
-        Livro::~Livro(){
-            std::cout << "[Livro] destrutor: '" titulo_ << "' removido. \n";
-        }
+std::string Livro::title() const { return title_; }
+std::string Livro::author() const { return author_; }
+std::string Livro::isbn() const { return isbn_; }
+int Livro::available_copies() const { return available_copies_; }
 
-        std::string titulo() const{
-            return titulo_;
-        }
-        std::string autor() const{
-            return autor_;
-        }
-        std::string isbn() const{
-            return isbn_;
-        }
-        int copiasdisponiveis() const{
-            return copiasdisponiveis_;
-        }
+bool Livro::loan_copy() {
+    if (available_copies_ > 0) {
+        available_copies_--;
+        return true;
+    }
+    return false;
+}
 
-        bool Livro::loan_copy(){
-            if(copiasdisponiveis_ > 0){
-                copiasdisponiveis_--;
-                return true;
-            }
-            return false;
-        }
-        void Livro::return_copy(){
-            copiasdisponiveis_++;
-        }
-
-};
+void Livro::return_copy() {
+    available_copies_++;
+}

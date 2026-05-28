@@ -1,23 +1,22 @@
-#ifndef BIBLIOTECA.HPP
-#define BIBLIOTECA.HPP
+#ifndef BIBLIOTECA_HPP
+#define BIBLIOTECA_HPP
 
-#include livro.hpp
+#include "livro.hpp"
 #include <vector>
 
 class Biblioteca {
-    private:
-        std::string nome_biblioteca_;
-        std::vector<Livro*> catalogo_;
+private:
+    std::string library_name_;
 
-    
-    public:
-        explicit Biblioteca(std::string t_nome);
-        ~Biblioteca();
+    std::vector<Livro*> catalog_;
 
+public:
+    explicit Biblioteca(std::string t_name);
+    ~Biblioteca();
 
-        void novo_livro(std::string t, std::strig a, std::string isbn, int c);
-        Livro* get_livro(size_t index);
-        void mostra_catalogo() const;
-
+    void add_book_to_catalog(std::string t_title, std::string t_author, std::string t_isbn, int t_copies);
+    Livro* get_book(size_t index);
+    void show_catalog() const;
 };
+
 #endif

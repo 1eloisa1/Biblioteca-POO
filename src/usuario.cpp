@@ -1,22 +1,14 @@
-#ifndef "usuario.hpp"
-
+#include "usuario.hpp"
 #include <iostream>
 
+Usuario::Usuario(std::string t_name, std::string t_email) 
+    : name_(t_name), email_(t_email) {
+    std::cout << "[Usuario]: " << name_ << " criado.\n";
+}
 
+Usuario::~Usuario() {
+    std::cout << "[Usuario]:" << name_ << " destruido.\n";
+}
 
-        Usuario::Usuario(std::string n, std::string e)
-            : nome_(n), email_(e){
-                std::cout << "[User] construtor: '" nome_ << "' registrado. \n";
-            }
-        Usuario::~Usuario(){
-            std::cout << "[User] destrutor: '" nome_ << "' removido. \n";
-        }
-
-        std::string nome() const{
-            return nome_;
-        }
-        std::string email() const{
-            return email_;
-        }
-
-};
+std::string Usuario::name() const { return name_; }
+std::string Usuario::email() const { return email_; }
