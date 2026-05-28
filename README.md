@@ -1,7 +1,7 @@
-# Floroteca - Sistema de Gerenciamento de Biblioteca
+# Sistema de Gerenciamento de Biblioteca
 
-**Aluna:** Maria Eloísa Silva  
-**Disciplina:** Programação Orientada a Objetos (2026.1)  
+**Aluna:** Maria Eloísa Silva de Sousa  
+**Disciplina:** Programação Orientada a Objetos
 **Professor:** Carlos Eduardo C. F. Batista  
 
 ## Descrição do Domínio
@@ -50,4 +50,3 @@ classDiagram
     Biblioteca "1" *-- "0..*" Livro : Composição
     Emprestimo "0..*" --> "1" Usuario : Agregação
     Emprestimo "0..*" --> "1" Livro : Agregação
-    

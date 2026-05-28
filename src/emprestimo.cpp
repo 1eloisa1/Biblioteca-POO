@@ -13,7 +13,7 @@ Emprestimo::~Emprestimo() {
 }
 
 float Emprestimo::calculate_fine() const {
-    const int limit_days = 7;
+    const int limit_days = 15;
     if (days_loaned_ > limit_days) {
         return (days_loaned_ - limit_days) * 2.50f;
     }
