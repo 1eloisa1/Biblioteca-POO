@@ -27,7 +27,7 @@ Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos 
 
 ---
 
-## 📊 Diagrama de Classes UML (Unificado)
+## Diagrama de Classes UML (Unificado)
 
 ```mermaid
 classDiagram

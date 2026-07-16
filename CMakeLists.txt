@@ -35,7 +35,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Executável de testes (testes) - Sem conflitos de nomes
 add_executable(testes 
     tests/test_tp2.cpp 
     src/item_acervo.cpp
@@ -48,7 +47,6 @@ add_executable(testes
 target_include_directories(testes PRIVATE src)
 target_link_libraries(testes PRIVATE Catch2::Catch2WithMain)
 
-# Descoberta automática de testes para o CTest
 include(CTest)
 include(Catch)
 catch_discover_tests(testes)
