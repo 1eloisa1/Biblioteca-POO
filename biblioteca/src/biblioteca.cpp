@@ -17,15 +17,15 @@ void Biblioteca::add_book_to_catalog(string t_title, string t_author, string t_i
 
 Livro* Biblioteca::get_book(size_t index) {
     if (index < catalog_.size()) {
-        return catalog_[index].get();
+        return dynamic_cast<Livro*>(catalog_[index].get());
     }
     return nullptr;
 }
 
 void Biblioteca::show_catalog() const {
     cout << "\n--- Catalogo da " << library_name_ << " ---\n";
-    for (const auto& book : catalog_) {
-        cout << "- " << book->title() << " (" << book->author() << ") - Copias: " << book->available_copies() << "\n";
+    for (const auto& item : catalog_) {
+        cout << "- ";
+        item->exibir(); 
     }
-    cout << "----------------------------------------\n";
 }

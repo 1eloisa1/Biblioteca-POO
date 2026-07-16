@@ -1,6 +1,7 @@
 #ifndef BIBLIOTECA_HPP
 #define BIBLIOTECA_HPP
 
+#include "item_acervo.hpp"
 #include "livro.hpp"
 #include <vector>
 #include <memory> 
@@ -9,7 +10,7 @@ class Biblioteca {
 private:
     std::string library_name_;
 
-    std::vector<std::unique_ptr<Livro>> catalog_;
+    std::vector<std::unique_ptr<ItemAcervo>> catalog_;
 
 public:
     explicit Biblioteca(std::string t_name);
