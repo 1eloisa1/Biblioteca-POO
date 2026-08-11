@@ -2,9 +2,7 @@
 #include "item_acervo.hpp"
 #include "emprestavel.hpp"
 
-// Questão 1 (B) & Questão 3 (B): Herança de classe base e da interface pura
-
-class Livro final : public ItemAcervo, public Emprestavel { 
+class Livro final : public ItemAcervo, public Emprestavel {
 private:
     std::string author_;
     int available_copies_;
@@ -28,6 +26,8 @@ public:
     void return_copy();
 
     std::string type_name() const override { return "Livro"; }
-    json to_json() const override;
-    static Livro from_json(const json& j);
 };
+
+// Q4 (A): Funções Não-Intrusivas no padrão nlohmann/json (ADL)
+void to_json(json& j, const Livro& l);
+void from_json(const json& j, Livro& l);

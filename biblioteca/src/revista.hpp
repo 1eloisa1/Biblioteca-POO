@@ -1,5 +1,5 @@
 #pragma once
-#include "item_acervo.hpp" 
+#include "item_acervo.hpp"
 
 class Revista : public ItemAcervo {
 private:
@@ -12,7 +12,10 @@ public:
     float calcular() const override;
     void exibir() const override;
 
+    int get_edicao() const { return edicao; }
     std::string type_name() const override { return "Revista"; }
-    json to_json() const override;
-    static Revista from_json(const json& j);
 };
+
+// Q4 (A): Funções Não-Intrusivas no padrão nlohmann/json
+void to_json(json& j, const Revista& r);
+void from_json(const json& j, Revista& r);

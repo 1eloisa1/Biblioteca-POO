@@ -2,8 +2,8 @@
 #include <iostream>
 
 Livro::Livro(std::string t_title, std::string t_author, std::string t_isbn, int t_copies)
-    : ItemAcervo(std::move(t_title), std::move(t_isbn)), 
-      author_(std::move(t_author)), 
+    : ItemAcervo(std::move(t_title), std::move(t_isbn)),
+      author_(std::move(t_author)),
       available_copies_(t_copies) {}
 
 float Livro::calcular() const { return 2.50f; }
@@ -32,15 +32,19 @@ bool Livro::loan_copy() {
 
 void Livro::return_copy() { available_copies_++; }
 
-json Livro::to_json() const {
-    json j = ItemAcervo::to_json();
-    j["author"] = author_;
-    j["copies"] = available_copies_;
-    return j;
+// Q4 (A): Implementação Não-Intrusiva
+void to_json(json& j, const Livro& l) {
+    j = json{
+        {"type", l.type_name()},
+        {"codigo", l.isbn()},
+        {"titulo", l.title()},
+        {"author", l.author()},
+        {"copies", l.available_copies()}
+    };
 }
 
-Livro Livro::from_json(const json& j) {
-    return Livro(
+void from_json(const json& j, Livro& l) {
+    l = Livro(
         j.at("titulo").get<std::string>(),
         j.at("author").get<std::string>(),
         j.at("codigo").get<std::string>(),

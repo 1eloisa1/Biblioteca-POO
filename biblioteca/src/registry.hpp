@@ -4,7 +4,7 @@
 #include <concepts>
 #include <utility>
 
-// Q1 (B) CRTP: Mixin para contagem estática de instâncias
+// Q1 (B): CRTP - Mixin para contagem estática de instâncias vivas sem vtable
 template <typename Derived>
 class Counted {
 private:
@@ -19,13 +19,13 @@ public:
     static int alive() { return count_; }
 };
 
-// Q1 (C) Concept: Exige o método calcular() const que retorne algo conversível para double
+// Q1 (C): Concept C++20 - Restringe o template para tipos com calcular() const -> double
 template <typename T>
 concept Calculavel = requires(const T& t) {
     { t.calcular() } -> std::convertible_to<double>;
 };
 
-// Q1 (A) & (D) Template Reutilizável Restrito por Concept
+// Q1 (A) & (D): Template reutilizável restrito pelo Concept Calculavel
 template <Calculavel T>
 class Registry {
 private:

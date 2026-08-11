@@ -4,10 +4,9 @@ project(biblioteca CXX)
 # Exigido pelo TP3: Suporte ao C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Opções de compilação Debug + Address Sanitizer
+# Compilação Debug + Address Sanitizer
 if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
     add_compile_options(-Wall -Wextra -fsanitize=address,undefined -g)
     add_link_options(-fsanitize=address,undefined)
@@ -23,13 +22,17 @@ FetchContent_MakeAvailable(json)
 
 # Executável principal (Q1 a Q4)
 add_executable(biblioteca
-    src/main.cpp 
+    src/main.cpp
     src/biblioteca.cpp
     src/usuario.cpp
     src/emprestimo.cpp
     src/item_acervo.cpp
     src/livro.cpp
     src/revista.cpp
+    src/registry.cpp
+    src/repositorio.cpp
+    src/excecoes.cpp
+    src/emprestavel.cpp
 )
 target_include_directories(biblioteca PRIVATE src)
 target_link_libraries(biblioteca PRIVATE nlohmann_json::nlohmann_json)
@@ -51,6 +54,10 @@ add_executable(testes_tp3
     src/revista.cpp
     src/usuario.cpp
     src/emprestimo.cpp
+    src/registry.cpp
+    src/repositorio.cpp
+    src/excecoes.cpp
+    src/emprestavel.cpp
 )
 target_include_directories(testes_tp3 PRIVATE src)
 target_link_libraries(testes_tp3 PRIVATE Catch2::Catch2WithMain nlohmann_json::nlohmann_json)
@@ -73,6 +80,10 @@ qt_add_executable(gui
     src/revista.cpp
     src/usuario.cpp
     src/emprestimo.cpp
+    src/registry.cpp
+    src/repositorio.cpp
+    src/excecoes.cpp
+    src/emprestavel.cpp
 )
 
 target_include_directories(gui PRIVATE src)

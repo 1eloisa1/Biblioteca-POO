@@ -1,4 +1,4 @@
-#include "revista.hpp" 
+#include "revista.hpp"
 #include <iostream>
 
 Revista::Revista(std::string t, std::string c, int ed)
@@ -10,14 +10,18 @@ void Revista::exibir() const {
     std::cout << "[Revista] Edicao " << edicao << ": " << titulo << "\n";
 }
 
-json Revista::to_json() const {
-    json j = ItemAcervo::to_json();
-    j["edicao"] = edicao;
-    return j;
+// Q4 (A): Implementação Não-Intrusiva
+void to_json(json& j, const Revista& r) {
+    j = json{
+        {"type", r.type_name()},
+        {"codigo", r.get_codigo()},
+        {"titulo", r.get_titulo()},
+        {"edicao", r.get_edicao()}
+    };
 }
 
-Revista Revista::from_json(const json& j) {
-    return Revista(
+void from_json(const json& j, Revista& r) {
+    r = Revista(
         j.at("titulo").get<std::string>(),
         j.at("codigo").get<std::string>(),
         j.at("edicao").get<int>()

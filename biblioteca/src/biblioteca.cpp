@@ -1,21 +1,13 @@
 #include "biblioteca.hpp"
 #include <iostream>
 
-using namespace std;
+Biblioteca::Biblioteca(std::string name) : library_name_(std::move(name)) {}
 
-Biblioteca::Biblioteca(string t_name) : library_name_(t_name) {
-    cout << "[Biblioteca] '" << library_name_ << "' aberta.\n";
+void Biblioteca::add_book_to_catalog(std::string title, std::string author, std::string isbn, int copies) {
+    catalog_.push_back(std::make_unique<Livro>(std::move(title), std::move(author), std::move(isbn), copies));
 }
 
-Biblioteca::~Biblioteca() {
-    cout << "Fechando a biblioteca.\n";
-}
-
-void Biblioteca::add_book_to_catalog(string t_title, string t_author, string t_isbn, int t_copies) {
-    catalog_.push_back(make_unique<Livro>(t_title, t_author, t_isbn, t_copies));
-}
-
-Livro* Biblioteca::get_book(size_t index) {
+Livro* Biblioteca::get_book(std::size_t index) {
     if (index < catalog_.size()) {
         return dynamic_cast<Livro*>(catalog_[index].get());
     }
@@ -23,9 +15,8 @@ Livro* Biblioteca::get_book(size_t index) {
 }
 
 void Biblioteca::show_catalog() const {
-    cout << "\n--- Catalogo da " << library_name_ << " ---\n";
+    std::cout << "Catalog de " << library_name_ << ":\n";
     for (const auto& item : catalog_) {
-        cout << "- ";
-        item->exibir(); 
+        item->exibir();
     }
 }
