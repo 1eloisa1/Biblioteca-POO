@@ -25,7 +25,7 @@ Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos 
 
 * **Agregação (`Emprestimo` ➔ `Usuario` e `Livro`):** A classe `Emprestimo` apenas associa e referencia entidades que têm existências independentes na memória. É implementada utilizando ponteiros observadores brutos (`const Usuario*` e `Livro*`), garantindo que o ciclo de vida do empréstimo não interfira na persistência das instâncias agregadas.
 
-   ## Programação Genérica (TP3 - Questão 1)
+## Programação Genérica (TP3 - Questão 1)
 * **O que o template abstrai:** A classe `Registry<T>` abstrai o armazenamento e acesso genérico e seguro para coleções de qualquer tipo de item do domínio que satisfaça as regras de negócio.
 * **Por que CRTP em vez de Herança Virtual:** O CRTP (`Counted<Derived>`) permite injetar contagem estática de instâncias vivas diretamente em tempo de compilação, eliminando totalmente o custo de chamadas virtuais (vtable lookup) para essa funcionalidade.
 * **Ranges vs. Laço Tradicional:** O pipeline de `std::ranges` torna a filtragem e transformação declarativas e concisas. O código antes/depois eliminou a necessidade de criar vetores intermediários manuais e laços `for` repetitivos.
