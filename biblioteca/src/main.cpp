@@ -1,102 +1,180 @@
 #include <iostream>
 #include <vector>
 #include <memory>
+#include <optional>
+#include <variant>
+#include <ranges>
+#include <algorithm>
+#include <numeric>
+#include <thread>
+#include <future>
+#include <mutex>
+
+#include "registry.hpp"
+#include "excecoes.hpp"
 #include "livro.hpp"
 #include "revista.hpp"
-#include "biblioteca.hpp"
-#include "usuario.hpp"
-#include "emprestimo.hpp"
+#include "repositorio.hpp"
 
-using namespace std;
-
-// Questão 2 (D)
-const ItemAcervo* obterMaiorTaxaAtraso(const std::vector<std::unique_ptr<ItemAcervo>>& itens) {
-    if (itens.empty()) return nullptr;
-    
-    const ItemAcervo* maior = itens.front().get();
-    for (const auto& item : itens) {
-        if (item->calcular() > maior->calcular()) {
-            maior = item.get();
-        }
+// Q2 (B) std::optional em busca que pode falhar
+std::optional<std::shared_ptr<ItemAcervo>> buscar_por_codigo(
+    const std::vector<std::shared_ptr<ItemAcervo>>& acervo, 
+    const std::string& codigo) 
+{
+    for (const auto& item : acervo) {
+        if (item->get_codigo() == codigo) return item;
     }
-    return maior;
+    return std::nullopt;
 }
 
-// Questão 3 (D)
-void realizarFluxoBiblioteca(Emprestavel& item) {
-    std::cout << "\n--- Iniciando fluxo de emprestimo via Interface (Q3-D) ---\n";
-    item.emprestar();
-    item.devolver();
-    std::cout << "--- Fluxo finalizado ---\n\n";
+// Q2 (C) std::variant para resultado multitipo
+using ResultadoOperacao = std::variant<std::shared_ptr<ItemAcervo>, std::string>;
+
+ResultadoOperacao processar_requisicao(bool sucesso, std::shared_ptr<ItemAcervo> item) {
+    if (sucesso) return item;
+    return std::string("Falha ao processar a requisicao do item.");
 }
 
 int main() {
-    std::cout << "           PARTE 1: TESTES DO TP1 (BIBLIOTECA)          \n";
-    
-    Usuario usuario_estudante("Amanda", "amanda@gmail.br");
+    // Q1: Programação Genérica, CRTP, Concept, Ranges
 
-    {
-        Biblioteca minha_biblioteca("Biblioteca");
+    // Q1 (A) Instanciando Template Reutilizável com dois tipos diferentes
+    Registry<Livro> registro_livros;
+    registro_livros.add(Livro("C++20 Advanced", "Stroustrup", "ISBN-101", 5));
+    registro_livros.add(Livro("Clean Code", "Robert Martin", "ISBN-102", 2));
 
-        minha_biblioteca.add_book_to_catalog("Alice no Pais das Maravilhas", "Lewis Carroll", "6558700654", 4);
-        minha_biblioteca.show_catalog();
+    Registry<Revista> registro_revistas;
+    registro_revistas.add(Revista("Tech Monthly", "REV-001", 12));
 
-        Livro* livro_alvo = minha_biblioteca.get_book(0);
+    std::cout << "Livros no registro generico: " << registro_livros.size() << "\n";
+    std::cout << "Revistas no registro generico: " << registro_revistas.size() << "\n";
 
-        if (livro_alvo && livro_alvo->loan_copy()) {
-            cout << "\nCopia do livro '" << livro_alvo->title() << "' reservada para emprestimo.\n";
-            
-            Emprestimo novo_emprestimo(&usuario_estudante, livro_alvo, 20);
-            novo_emprestimo.display_loan_info();
-            
-            cout << "\n--- Finalizando o Emprestimo ---\n";
-        }
-        
-        cout << "\n--- Saindo do Bloco (A Biblioteca e tudo que ela compoe serao destruidos) ---\n";
-    }
-    
-    cout << "Verificacao de independencia da agregacao:\n";
-    cout << "O usuario '" << usuario_estudante.name() << "' continua ativo no sistema.\n\n";
+    // Q1 (B) CRTP Contagem de Instâncias estáticas
+    std::cout << "Instancias vivas de ItemAcervo (via CRTP): " << Counted<ItemAcervo>::alive() << "\n";
 
-    std::cout << "           PARTE 2: TESTES DO TP2 (HERANCA)             \n";
+    // Q1 (E) Pipeline de Ranges (C++20) com 2 adaptadores (filter + transform)
+    std::vector<Livro> catalogo_livros = {
+        Livro("Design Patterns", "GoF", "001", 3),
+        Livro("Refactoring", "Fowler", "002", 0),
+        Livro("Effective Modern C++", "Meyers", "003", 4)
+    };
 
-    std::cout << "=== Teste 1: Cadeia de Destruicao Virtual (Q1-C) ===\n"; 
-    {
-        ItemAcervo* testeDestruicao = new Livro("C++ Eficaz", "Scott Meyers", "123", 2);
-        delete testeDestruicao;
+    namespace rv = std::ranges::views;
+    auto titulos_disponiveis = catalogo_livros 
+        | rv::filter([](const Livro& l) { return l.available_copies() > 0; })
+        | rv::transform([](const Livro& l) { return l.title(); });
+
+    std::cout << "\nLivros disponiveis (via Pipeline Ranges C++20):\n";
+    for (const auto& titulo : titulos_disponiveis) {
+        std::cout << " - " << titulo << "\n";
     }
 
-    std::cout << "=== Teste 2 & 3: Polimorfismo Dinamico (Q2-A, B, D) ===\n"; 
-    {
-        // Q2 (A)
-        std::vector<std::unique_ptr<ItemAcervo>> acervo;
-        acervo.push_back(std::make_unique<Livro>("Design Patterns", "GoF", "001", 3));
-        acervo.push_back(std::make_unique<Revista>("Mundo Computacao", "002", 42));
-        acervo.push_back(std::make_unique<Livro>("Clean Code", "Robert Martin", "003", 5));
+    // Q2: Tratamento de Erros (Exceções, optional, variant)
 
-        // Q2 (B)
-        std::cout << "\n--- Exibindo Acervo ---\n";
-        for (const auto& item : acervo) {
-            item->exibir();
-            std::cout << "Taxa de Atraso Diaria:  " << item->calcular() << "\n\n";
-        }
-
-        // Q2 (D)
-        const ItemAcervo* maior = obterMaiorTaxaAtraso(acervo);
-        if (maior) {
-            std::cout << "Item com maior taxa de atraso diaria: ";
-            maior->exibir();
-        }
-
-        // Q3 (D)
-        auto* livroEmprestavel = dynamic_cast<Emprestavel*>(acervo[0].get());
-        if (livroEmprestavel) {
-            realizarFluxoBiblioteca(*livroEmprestavel);
-        }
-
-        std::cout << "--- Saindo do escopo (Vetor sera destruido) ---\n";
-        // Q2 (C)
+    // Q2 (A) & (D) Try/Catch capturando pela Exceção Base
+    try {
+        std::cout << "Tentando operacao invalida...\n";
+        throw ValidacaoInvalidaException("O ISBN do livro nao pode conter simbolos especiais!");
+    } catch (const ErroDominio& e) {
+        std::cout << "[CAPTURADO PELA BASE] " << e.what() << "\n";
     }
+
+    // Q2 (B) Busca com std::optional
+    std::vector<std::shared_ptr<ItemAcervo>> acervo_misto = {
+        std::make_shared<Livro>("Domain-Driven Design", "Evans", "DDD-01", 2),
+        std::make_shared<Revista>("Scientific American", "SA-99", 500)
+    };
+
+    auto busca_sucesso = buscar_por_codigo(acervo_misto, "DDD-01");
+    if (busca_sucesso.has_value()) {
+        std::cout << "Busca por 'DDD-01': Encontrado -> " << busca_sucesso.value()->get_titulo() << "\n";
+    }
+
+    auto busca_falha = buscar_por_codigo(acervo_misto, "CODIGO_INEXISTENTE");
+    if (!busca_falha.has_value()) {
+        std::cout << "Busca por 'CODIGO_INEXISTENTE': Retornou std::nullopt (Correto!)\n";
+    }
+
+    // Q2 (C) Tratar std::variant com std::visit
+    ResultadoOperacao res1 = processar_requisicao(true, acervo_misto[0]);
+    ResultadoOperacao res2 = processar_requisicao(false, nullptr);
+
+    auto visitante = [](auto&& arg) {
+        using T = std::decay_t<decltype(arg)>;
+        if constexpr (std::is_same_v<T, std::shared_ptr<ItemAcervo>>) {
+            std::cout << "Variant Sucesso: " << arg->get_titulo() << "\n";
+        } else if constexpr (std::is_same_v<T, std::string>) {
+            std::cout << "Variant Erro: " << arg << "\n";
+        }
+    };
+
+    std::visit(visitante, res1);
+    std::visit(visitante, res2);
+
+    // Q3: STL & Concorrência
+
+    // Q3 (A) Contêineres STL (std::map)
+    std::map<std::string, std::shared_ptr<ItemAcervo>> indice_ordenado;
+    indice_ordenado["B001"] = acervo_misto[0];
+    indice_ordenado["A002"] = acervo_misto[1];
+
+    // Q3 (B) Algoritmos da STL (<algorithm>, <numeric>) + Lambda com captura
+    float taxa_limite = 1.50f;
+    auto qtd_acima_limite = std::count_if(acervo_misto.begin(), acervo_misto.end(),
+        [taxa_limite](const std::shared_ptr<ItemAcervo>& item) {
+            return item->calcular() > taxa_limite;
+        });
+    std::cout << "Qtd de itens com taxa diaria > " << taxa_limite << ": " << qtd_acima_limite << "\n";
+
+    float soma_taxas = std::accumulate(acervo_misto.begin(), acervo_misto.end(), 0.0f,
+        [](float acc, const std::shared_ptr<ItemAcervo>& item) {
+            return acc + item->calcular();
+        });
+    std::cout << "Soma acumulada das taxas: R$ " << soma_taxas << "\n";
+
+    // Q3 (C) & (D) Concorrência com std::async, std::mutex e std::lock_guard
+    std::mutex mtx;
+    double total_taxas_paralelo = 0.0;
+    std::vector<std::future<double>> futuros;
+
+    for (const auto& item : acervo_misto) {
+        futuros.push_back(std::async(std::launch::async, [&item, &mtx, &total_taxas_paralelo]() {
+            double taxa = item->calcular();
+            {
+                std::lock_guard<std::mutex> lock(mtx);
+                total_taxas_paralelo += taxa;
+            }
+            return taxa;
+        }));
+    }
+
+    for (auto& f : futuros) {
+        f.get();
+    }
+    std::cout << "Calculo paralelo com threads/mutex finalizado! Total: R$ " << total_taxas_paralelo << "\n";
+
+    // Q4: Serialização JSON e SOLID (DIP)
+    std::cout << "\n--- QUESTAO 4: Serializacao JSON e SOLID ---\n";
+
+    // Q4 (D) Testando com MemoryRepository (sem tocar no disco)
+    MemoryRepository repo_memoria;
+    AppCore app_teste(repo_memoria);
+
+    app_teste.adicionar_item(acervo_misto[0]);
+    app_teste.adicionar_item(acervo_misto[1]);
+    app_teste.salvar();
+
+    std::cout << "Dados salvos no MemoryRepository! Itens salvos: " 
+              << app_teste.get_estado().acervo.size() << "\n";
+
+    // Q4 (D) Testando com JsonRepository (produção em arquivo)
+    JsonRepository repo_json("estado_biblioteca.json");
+    AppCore app_producao(repo_json);
+
+    app_producao.adicionar_item(acervo_misto[0]);
+    app_producao.adicionar_item(acervo_misto[1]);
+    app_producao.salvar();
+    std::cout << "Estado serializado com sucesso no arquivo 'estado_biblioteca.json'!\n";
 
     return 0;
 }

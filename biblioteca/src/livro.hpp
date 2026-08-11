@@ -1,9 +1,9 @@
 #pragma once
 #include "item_acervo.hpp"
 #include "emprestavel.hpp"
-#include <string>
 
 // Questão 1 (B) & Questão 3 (B): Herança de classe base e da interface pura
+
 class Livro final : public ItemAcervo, public Emprestavel { 
 private:
     std::string author_;
@@ -11,7 +11,7 @@ private:
 
 public:
     Livro(std::string t_title, std::string t_author, std::string t_isbn, int t_copies);
-    ~Livro() override;
+    ~Livro() override = default;
 
     float calcular() const override;
     void exibir() const override;
@@ -26,4 +26,8 @@ public:
     int available_copies() const;
     bool loan_copy();
     void return_copy();
+
+    std::string type_name() const override { return "Livro"; }
+    json to_json() const override;
+    static Livro from_json(const json& j);
 };

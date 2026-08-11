@@ -7,8 +7,12 @@ private:
 
 public:
     Revista(std::string t, std::string c, int ed);
-    ~Revista() override;
+    ~Revista() override = default;
 
     float calcular() const override;
     void exibir() const override;
+
+    std::string type_name() const override { return "Revista"; }
+    json to_json() const override;
+    static Revista from_json(const json& j);
 };

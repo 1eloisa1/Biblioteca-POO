@@ -5,6 +5,7 @@
 #include "livro.hpp"
 #include <vector>
 #include <memory> 
+#include <string>
 
 class Biblioteca {
 private:

@@ -1,0 +1,5 @@
+if(EXISTS "C:/Users/maria/OneDrive/Documentos/Biblioteca-POO/build/testes_tp3-b12d07c_tests.cmake")
+  include("C:/Users/maria/OneDrive/Documentos/Biblioteca-POO/build/testes_tp3-b12d07c_tests.cmake")
+else()
+  add_test(testes_tp3_NOT_BUILT-b12d07c testes_tp3_NOT_BUILT-b12d07c)
+endif()
