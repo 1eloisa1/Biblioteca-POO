@@ -44,6 +44,8 @@ int main() {
     registro_revistas.add(Revista("Tech Monthly", "REV-001", 12));
 
     // Q1 (D): DEMONSTRAÇÃO DE VIOLAÇÃO DO CONCEPT (Descomentar para testar o erro de compilação)
+    // Registry<int> registro_invalido;
+    // ERRO DE COMPILAÇÃO: 'int' nao satisfaz o concept 'Calculavel'
 
     std::cout << "Livros no registro generico: " << registro_livros.size() << "\n";
     std::cout << "Revistas no registro generico: " << registro_revistas.size() << "\n";
