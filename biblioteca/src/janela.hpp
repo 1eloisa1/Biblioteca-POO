@@ -21,6 +21,7 @@ private:
     QLineEdit* input_isbn_;
     
     QPushButton* btn_adicionar_;
+    QPushButton* btn_remover_;
     QPushButton* btn_salvar_;
     QPushButton* btn_carregar_;
 

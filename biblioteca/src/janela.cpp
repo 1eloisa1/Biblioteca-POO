@@ -2,7 +2,7 @@
 #include <QMessageBox>
 
 JanelaPrincipal::JanelaPrincipal(AppCore& core, QWidget* parent)
-    : QMainWindow(parent), app_core_(core) 
+    : QMainWindow(parent), app_core_(core)
 {
     setup_ui();
     atualizar_lista();
@@ -12,12 +12,10 @@ void JanelaPrincipal::setup_ui() {
     auto* central = new QWidget(this);
     auto* layout_principal = new QVBoxLayout(central);
 
-    // Lista de Itens
     lista_itens_ = new QListWidget(this);
     layout_principal->addWidget(new QLabel("Acervo da Biblioteca:", this));
     layout_principal->addWidget(lista_itens_);
 
-    // Inputs
     auto* layout_inputs = new QHBoxLayout();
     input_titulo_ = new QLineEdit(this);
     input_titulo_->setPlaceholderText("Título");
@@ -31,13 +29,14 @@ void JanelaPrincipal::setup_ui() {
     layout_inputs->addWidget(input_isbn_);
     layout_principal->addLayout(layout_inputs);
 
-    // Botões
     auto* layout_botoes = new QHBoxLayout();
     btn_adicionar_ = new QPushButton("Adicionar Livro", this);
+    btn_remover_ = new QPushButton("Remover Selecionado", this);
     btn_salvar_ = new QPushButton("Salvar (JSON)", this);
     btn_carregar_ = new QPushButton("Carregar (JSON)", this);
 
     layout_botoes->addWidget(btn_adicionar_);
+    layout_botoes->addWidget(btn_remover_);
     layout_botoes->addWidget(btn_salvar_);
     layout_botoes->addWidget(btn_carregar_);
     layout_principal->addLayout(layout_botoes);
@@ -45,7 +44,7 @@ void JanelaPrincipal::setup_ui() {
     setCentralWidget(central);
     resize(600, 400);
 
-    // Conexão dos Sinais/Slots (GUI é uma camada fina)
+    // Q6: Camada fina (delegação direta para AppCore)
     connect(btn_adicionar_, &QPushButton::clicked, [this]() {
         if (input_titulo_->text().isEmpty() || input_isbn_->text().isEmpty()) {
             QMessageBox::warning(this, "Aviso", "Preencha o título e o ISBN!");
@@ -67,15 +66,25 @@ void JanelaPrincipal::setup_ui() {
         input_isbn_->clear();
     });
 
+    connect(btn_remover_, &QPushButton::clicked, [this]() {
+        int row = lista_itens_->currentRow();
+        if (row >= 0) {
+            app_core_.remover_item(static_cast<std::size_t>(row));
+            atualizar_lista();
+        } else {
+            QMessageBox::warning(this, "Aviso", "Selecione um item para remover!");
+        }
+    });
+
     connect(btn_salvar_, &QPushButton::clicked, [this]() {
         app_core_.salvar();
-        QMessageBox::information(this, "Sucesso", "Estado do acervo salvo com sucesso em JSON!");
+        QMessageBox::information(this, "Sucesso", "Estado salvo com sucesso em JSON!");
     });
 
     connect(btn_carregar_, &QPushButton::clicked, [this]() {
         app_core_.carregar();
         atualizar_lista();
-        QMessageBox::information(this, "Sucesso", "Estado carregado do JSON com sucesso!");
+        QMessageBox::information(this, "Sucesso", "Estado carregado do JSON!");
     });
 }
 

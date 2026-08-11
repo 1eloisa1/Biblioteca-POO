@@ -1,18 +1,23 @@
 cmake_minimum_required(VERSION 3.20)
 project(biblioteca CXX)
 
-# Exigido pelo TP3: Suporte ao C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Compilação Debug + Address Sanitizer
-if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
-    add_compile_options(-Wall -Wextra -fsanitize=address,undefined -g)
-    add_link_options(-fsanitize=address,undefined)
+# Opção de Sanitizer (Address por padrão, ThreadSanitizer opcional via -DENABLE_TSAN=ON)
+option(ENABLE_TSAN "Habilitar ThreadSanitizer" OFF)
+
+if(ENABLE_TSAN)
+    add_compile_options(-Wall -Wextra -fsanitize=thread -g)
+    add_link_options(-fsanitize=thread)
+else()
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR NOT CMAKE_BUILD_TYPE)
+        add_compile_options(-Wall -Wextra -fsanitize=address,undefined -g)
+        add_link_options(-fsanitize=address,undefined)
+    endif()
 endif()
 
-# Q4 (A): nlohmann/json via FetchContent
 include(FetchContent)
 FetchContent_Declare(
     json
@@ -20,7 +25,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(json)
 
-# Executável principal (Q1 a Q4)
 add_executable(biblioteca
     src/main.cpp
     src/biblioteca.cpp
@@ -37,7 +41,6 @@ add_executable(biblioteca
 target_include_directories(biblioteca PRIVATE src)
 target_link_libraries(biblioteca PRIVATE nlohmann_json::nlohmann_json)
 
-# Q5 (A): Configuração do Catch2 v3
 FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
@@ -45,7 +48,6 @@ FetchContent_Declare(
 )
 FetchContent_MakeAvailable(Catch2)
 
-# Executável dos testes do TP3 (Q5)
 add_executable(testes_tp3
     tests/test_tp3.cpp
     src/biblioteca.cpp
@@ -66,7 +68,6 @@ include(CTest)
 include(Catch)
 catch_discover_tests(testes_tp3)
 
-# Q6: Suporte ao Qt6
 find_package(Qt6 REQUIRED COMPONENTS Widgets)
 qt_standard_project_setup()
 

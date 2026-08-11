@@ -482,6 +482,9 @@ Catch2_SOURCE_DIR:STATIC=C:/Users/maria/OneDrive/Documentos/Biblioteca-POO/build
 //Maximum time allowed before CTest will kill the test.
 DART_TESTING_TIMEOUT:STRING=1500
 
+//Habilitar ThreadSanitizer
+ENABLE_TSAN:BOOL=OFF
+
 //Directory under which to collect all populated content
 FETCHCONTENT_BASE_DIR:PATH=C:/Users/maria/OneDrive/Documentos/Biblioteca-POO/build/_deps
 

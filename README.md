@@ -17,8 +17,6 @@ Agregação (Emprestimo -- Usuario e Livro): A relação é de agregação porqu
 std::unique_ptr<Livro> em Biblioteca: Substituiu com sucesso o uso de ponteiros brutos (raw pointers) no vetor do catálogo. A escolha foi por um ponteiro inteligente de posse exclusiva (unique_ptr) porque a relação de herança/ciclo de vida é uma Composição estrita. Com isso, os destrutores manuais que continham laços de deleção foram totalmente eliminados, deixando a cargo do próprio ponteiro a limpeza automática da memória ao sair de escopo, evitando vazamentos (memory leaks).  
 Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos como ponteiros brutos por recomendação direta da semântica de posse do C++ moderno para relações de Agregação. Como a classe Emprestimo funciona estritamente como uma observadora sem posse, ela não tem o direito de gerenciar ou destruir o Usuario ou o Livro associado. No método get_book(), usamos a função .get() do unique_ptr para expor o endereço bruto interno de forma segura apenas para essa observação.  
 
-
-
 ### Relações de Ciclo de Vida e Semântica de Posse
 
 **Composição (`Biblioteca` ➔ `ItemAcervo`):** A classe `Biblioteca` é a dona absoluta das instâncias do acervo. A relação é implementada usando `std::vector<std::unique_ptr<ItemAcervo>>`. Isso garante que, quando a biblioteca é destruída, todos os itens do acervo gerenciado são automaticamente desalocados na ordem inversa correta.
@@ -30,12 +28,29 @@ Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos 
 * **Por que CRTP em vez de Herança Virtual:** O CRTP (`Counted<Derived>`) permite injetar contagem estática de instâncias vivas diretamente em tempo de compilação, eliminando totalmente o custo de chamadas virtuais (vtable lookup) para essa funcionalidade.
 * **Ranges vs. Laço Tradicional:** O pipeline de `std::ranges` torna a filtragem e transformação declarativas e concisas. O código antes/depois eliminou a necessidade de criar vetores intermediários manuais e laços `for` repetitivos.
 
+### Containers STL
+
+- std::vector: utilizado para armazenar o acervo, pois representa
+  uma coleção sequencial de itens.
+- std::map: utilizado como índice ordenado por código, permitindo
+  localizar itens por uma chave e manter as chaves ordenadas.
+
 ### SOLID (TP3 - Questão 4)
 * **SRP (Single Responsibility Principle):** A classe `ItemAcervo` gerencia os dados do item, enquanto a persistência é delegada à hierarquia `Repository`.
 * **OCP (Open/Closed Principle):** Novos tipos de itens (ex: `CD`, `Tese`) podem ser criados herdando de `ItemAcervo` sem modificar a classe `Biblioteca` ou o `Registry`.
 * **LSP (Liskov Substitution Principle):** Instâncias de `Livro` ou `Revista` podem substituir `ItemAcervo` transparentemente.
 * **ISP (Interface Segregation Principle):** A interface `Emprestavel` expõe apenas os métodos necessários para emprestar/devolver, sem poluir a interface base `ItemAcervo`.
 * **DIP (Dependency Inversion Principle):** A classe de alto nível `AppCore` depende apenas da abstração `Repository`, recebida via injeção no construtor.
+
+### Refatoração SRP
+Antes, a classe responsável pelo sistema poderia concentrar
+as regras de negócio e persistência.
+A refatoração separou a persistência para a hierarquia
+Repository, deixando AppCore responsável pela lógica de alto nível.
+### Ponto de extensão OCP
+Um novo tipo de item, como CD, pode herdar de ItemAcervo
+e implementar calcular(), exibir() e type_name(), sem modificar
+a abstração Registry.
 
 ## Interface Gráfica com Qt (TP3 - Questão 6)
 Para compilar e executar a interface gráfica:

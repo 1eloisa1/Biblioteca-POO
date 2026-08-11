@@ -1,6 +1,5 @@
 #include "repositorio.hpp"
 
-// Q4 (D): JsonRepository
 JsonRepository::JsonRepository(std::string filename)
     : filename_(std::move(filename)) {}
 
@@ -10,7 +9,15 @@ void JsonRepository::save(const EstadoSistema& estado) {
     
     json items_array = json::array();
     for (const auto& item : estado.acervo) {
-        items_array.push_back(item->to_json());
+        if (auto livro = std::dynamic_pointer_cast<Livro>(item)) {
+            json j_item;
+            to_json(j_item, *livro);
+            items_array.push_back(j_item);
+        } else if (auto revista = std::dynamic_pointer_cast<Revista>(item)) {
+            json j_item;
+            to_json(j_item, *revista);
+            items_array.push_back(j_item);
+        }
     }
     j["itens"] = items_array;
 
@@ -28,18 +35,26 @@ EstadoSistema JsonRepository::load() {
     EstadoSistema estado;
     estado.version = j.value("version", 1);
 
-    for (const auto& item_json : j.at("itens")) {
-        std::string type = item_json.at("type").get<std::string>();
-        if (type == "Livro") {
-            estado.acervo.push_back(std::make_shared<Livro>(Livro::from_json(item_json)));
-        } else if (type == "Revista") {
-            estado.acervo.push_back(std::make_shared<Revista>(Revista::from_json(item_json)));
+    // Q4 (B): Tratamento explícito baseado na versão do schema
+    if (estado.version == 1) {
+        for (const auto& item_json : j.at("itens")) {
+            std::string type = item_json.at("type").get<std::string>();
+            if (type == "Livro") {
+                Livro l("", "", "", 0);
+                from_json(item_json, l);
+                estado.acervo.push_back(std::make_shared<Livro>(l));
+            } else if (type == "Revista") {
+                Revista r("", "", 0);
+                from_json(item_json, r);
+                estado.acervo.push_back(std::make_shared<Revista>(r));
+            }
         }
+    } else {
+        throw ValidacaoInvalidaException("Versao de esquema JSON nao suportada!");
     }
     return estado;
 }
 
-// Q4 (D): MemoryRepository
 void MemoryRepository::save(const EstadoSistema& estado) {
     estado_armazenado_ = estado;
 }
@@ -48,11 +63,16 @@ EstadoSistema MemoryRepository::load() {
     return estado_armazenado_;
 }
 
-// Q4 (C): AppCore desacoplado
 AppCore::AppCore(Repository& repo) : repo_(repo) {}
 
 void AppCore::adicionar_item(std::shared_ptr<ItemAcervo> item) {
     estado_.acervo.push_back(item);
+}
+
+void AppCore::remover_item(std::size_t index) {
+    if (index < estado_.acervo.size()) {
+        estado_.acervo.erase(estado_.acervo.begin() + index);
+    }
 }
 
 void AppCore::salvar() { repo_.save(estado_); }

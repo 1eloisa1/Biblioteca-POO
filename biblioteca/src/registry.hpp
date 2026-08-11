@@ -14,7 +14,7 @@ public:
     Counted() { ++count_; }
     Counted(const Counted&) { ++count_; }
     Counted(Counted&&) noexcept { ++count_; }
-    virtual ~Counted() { --count_; }
+    ~Counted() { --count_; }
 
     static int alive() { return count_; }
 };
