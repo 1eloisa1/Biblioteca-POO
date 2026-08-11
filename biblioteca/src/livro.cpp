@@ -17,6 +17,10 @@ void Livro::emprestar() { loan_copy(); }
 void Livro::devolver() { return_copy(); }
 bool Livro::estaEmprestado() const { return available_copies_ == 0; }
 
+Livro::~Livro() {
+    std::cout << "[Destrutor Derivada] ~Livro destruido.\n";
+}
+
 std::string Livro::title() const { return titulo; }
 std::string Livro::author() const { return author_; }
 std::string Livro::isbn() const { return codigo; }

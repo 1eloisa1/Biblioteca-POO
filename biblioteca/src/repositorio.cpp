@@ -70,9 +70,13 @@ void AppCore::adicionar_item(std::shared_ptr<ItemAcervo> item) {
 }
 
 void AppCore::remover_item(std::size_t index) {
-    if (index < estado_.acervo.size()) {
-        estado_.acervo.erase(estado_.acervo.begin() + index);
+    if (index >= estado_.acervo.size()) {
+        throw ItemNaoEncontradoException(
+            "Nenhum item encontrado no indice informado."
+        );
     }
+
+    estado_.acervo.erase(estado_.acervo.begin() + index);
 }
 
 void AppCore::salvar() { repo_.save(estado_); }

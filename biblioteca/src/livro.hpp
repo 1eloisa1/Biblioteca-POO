@@ -9,7 +9,7 @@ private:
 
 public:
     Livro(std::string t_title, std::string t_author, std::string t_isbn, int t_copies);
-    ~Livro() override = default;
+    ~Livro() override;
 
     float calcular() const override;
     void exibir() const override;

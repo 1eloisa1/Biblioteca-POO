@@ -16,7 +16,7 @@ public:
     ItemAcervo(std::string t, std::string c) 
         : titulo(std::move(t)), codigo(std::move(c)) {}
 
-    virtual ~ItemAcervo() override = default;
+    virtual ~ItemAcervo();
 
     virtual float calcular() const = 0; 
     virtual void exibir() const;

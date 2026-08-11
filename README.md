@@ -23,17 +23,28 @@ Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos 
 
 * **Agregação (`Emprestimo` ➔ `Usuario` e `Livro`):** A classe `Emprestimo` apenas associa e referencia entidades que têm existências independentes na memória. É implementada utilizando ponteiros observadores brutos (`const Usuario*` e `Livro*`), garantindo que o ciclo de vida do empréstimo não interfira na persistência das instâncias agregadas.
 
-### Programação Genérica (TP3 - Questão 1)
+### Programação Genérica
 * **O que o template abstrai:** A classe `Registry<T>` abstrai o armazenamento e acesso genérico e seguro para coleções de qualquer tipo de item do domínio que satisfaça as regras de negócio.
 * **Por que CRTP em vez de Herança Virtual:** O CRTP (`Counted<Derived>`) permite injetar contagem estática de instâncias vivas diretamente em tempo de compilação, eliminando totalmente o custo de chamadas virtuais (vtable lookup) para essa funcionalidade.
 * **Ranges vs. Laço Tradicional:** O pipeline de `std::ranges` torna a filtragem e transformação declarativas e concisas. O código antes/depois eliminou a necessidade de criar vetores intermediários manuais e laços `for` repetitivos.
 
-### Containers STL
+### Demonstração da violação do Concept
+O `Registry<T>` é restringido pelo concept `Calculavel`. Para demonstrar
+a restrição, basta descomentar temporariamente:
+```cpp
+Registry<int> registro_invalido;
+```
 
-- std::vector: utilizado para armazenar o acervo, pois representa
-  uma coleção sequencial de itens.
-- std::map: utilizado como índice ordenado por código, permitindo
-  localizar itens por uma chave e manter as chaves ordenadas.
+### Containers STL
+- `std::vector<Livro>`: utilizado para representar um catálogo sequencial
+  de livros. É apropriado porque o catálogo é percorrido e também acessado
+  por posição, oferecendo armazenamento contíguo e acesso por índice.
+
+- `std::map<std::string, std::shared_ptr<ItemAcervo>>`: utilizado como índice
+  ordenado dos itens do acervo, associando um código a cada item. A escolha
+  do `map` permite manter as chaves ordenadas e realizar buscas organizadas
+  pelo código do item.
+
 
 ### SOLID (TP3 - Questão 4)
 * **SRP (Single Responsibility Principle):** A classe `ItemAcervo` gerencia os dados do item, enquanto a persistência é delegada à hierarquia `Repository`.
