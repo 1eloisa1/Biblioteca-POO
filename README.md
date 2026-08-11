@@ -40,12 +40,12 @@ Ponteiros Brutos Observadores (Livro* e const Usuario*) em Emprestimo: Mantidos 
 ## Interface Gráfica com Qt (TP3 - Questão 6)
 Para compilar e executar a interface gráfica:
 
-```bash
+bash
 mkdir build && cd build
 cmake ..
 cmake --build . --target gui
 ./gui
----
+
 
 ## Diagrama de Classes UML (Unificado)
 
